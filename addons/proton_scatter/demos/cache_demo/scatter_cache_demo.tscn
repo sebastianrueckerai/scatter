@@ -139,7 +139,7 @@ force_uniform_scale = true
 modifier_stack = SubResource("Resource_d2t20")
 Performance/use_chunks = true
 Performance/chunk_dimensions = Vector3(15, 15, 15)
-metadata/_custom_type_script = "uid://dgqq1tf8prx5s"
+metadata/_custom_type_script = "uid://cbkqd22b4dw0m"
 
 [node name="ScatterItem" type="Node3D" parent="ProtonScatter"]
 script = ExtResource("9_ji0x0")
@@ -157,7 +157,7 @@ force_rebuild_on_load = false
 modifier_stack = SubResource("Resource_qiefs")
 Performance/use_chunks = true
 Performance/chunk_dimensions = Vector3(15, 15, 15)
-metadata/_custom_type_script = "uid://dgqq1tf8prx5s"
+metadata/_custom_type_script = "uid://cbkqd22b4dw0m"
 
 [node name="ScatterItem" type="Node3D" parent="ProtonScatter2"]
 script = ExtResource("9_ji0x0")
