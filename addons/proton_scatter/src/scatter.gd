@@ -98,7 +98,7 @@ var chunk_dimensions := Vector3.ONE * 15.0:
 
 # One dial for how far foliage is drawn, so a settings menu can move the whole
 # scene without editing every ScatterItem. Multiplies every visibility range this
-# node produces, and ScatterDensityLOD multiplies its max_distance by it too.
+# node produces, and ScatterDensityFalloff multiplies its max_distance by it too.
 const QUALITY_SETTING := "addons/proton_scatter/distance_scale"
 
 
@@ -764,7 +764,7 @@ func _load_baked_output() -> bool:
 	_apply_distance_scale(baked)
 
 	# Deferred because children run _ready() before their parent, so anything
-	# watching this node -- ScatterDensityLOD, a dependent scatter -- has not
+	# watching this node -- ScatterDensityFalloff, a dependent scatter -- has not
 	# connected yet at this point.
 	build_completed.emit.call_deferred()
 	return true

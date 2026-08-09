@@ -1,5 +1,5 @@
 @tool
-class_name ScatterDensityLOD
+class_name ScatterDensityFalloff
 extends Node
 
 ## Thins ProtonScatter foliage with distance, so any amount of ground can be
@@ -108,7 +108,7 @@ func _discover_scatters() -> void:
 	var root: Node = get_node_or_null(scatter_root) if not scatter_root.is_empty() \
 			else get_parent()
 	if not root:
-		push_warning("ScatterDensityLOD at %s: nothing to search." % get_path())
+		push_warning("ScatterDensityFalloff at %s: nothing to search." % get_path())
 		set_process(false)
 		return
 
@@ -123,7 +123,7 @@ func _discover_scatters() -> void:
 			stack.append(c)
 
 	if found == 0:
-		push_warning("ScatterDensityLOD at %s: no ProtonScatter node found under %s."
+		push_warning("ScatterDensityFalloff at %s: no ProtonScatter node found under %s."
 				% [get_path(), root.get_path()])
 		set_process(false)
 
