@@ -96,6 +96,17 @@ var chunk_dimensions := Vector3.ONE * 15.0:
 ## re-bake before shipping.
 @export_file("*.scn") var bake_path: String = ""
 
+# One dial for how far foliage is drawn, so a settings menu can move the whole
+# scene without editing every ScatterItem. Multiplies every visibility range this
+# node produces, and ScatterDensityLOD multiplies its max_distance by it too.
+const QUALITY_SETTING := "addons/proton_scatter/distance_scale"
+
+
+static func get_distance_scale() -> float:
+	var v = ProjectSettings.get_setting(QUALITY_SETTING, 1.0)
+	return maxf(float(v), 0.01) if v != null else 1.0
+
+
 @export_group("Compatibility")
 
 @export var force_uniform_scale: bool = false:
@@ -748,11 +759,37 @@ func _load_baked_output() -> bool:
 	output_root = baked
 	build_version += 1
 
+	# A bake froze whatever the distance scale was when it was written, so the
+	# ranges are re-applied here. Cheap: a few dozen nodes.
+	_apply_distance_scale(baked)
+
 	# Deferred because children run _ready() before their parent, so anything
 	# watching this node -- ScatterDensityLOD, a dependent scatter -- has not
 	# connected yet at this point.
 	build_completed.emit.call_deferred()
 	return true
+
+
+# Re-apply the quality dial to already-built chunks. Ranges are stored on disk at
+# whatever scale was in force when they were baked, so a bake must not lock the
+# player's graphics setting in.
+func _apply_distance_scale(root: Node) -> void:
+	var scale := get_distance_scale()
+	if is_equal_approx(scale, 1.0):
+		return
+	var stack: Array[Node] = [root]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		if n is GeometryInstance3D:
+			var g := n as GeometryInstance3D
+			if g.visibility_range_end > 0.0:
+				g.visibility_range_end *= scale
+				g.visibility_range_end_margin *= scale
+			if g.visibility_range_begin > 0.0:
+				g.visibility_range_begin *= scale
+				g.visibility_range_begin_margin *= scale
+		for c in n.get_children():
+			stack.append(c)
 
 
 # Write this node's current output to disk as a PackedScene, for bake_path to

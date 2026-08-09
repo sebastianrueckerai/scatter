@@ -279,10 +279,11 @@ func _process(_delta: float) -> void:
 		return
 	_last_update_position = pos
 
-	var max_d2 := max_distance * max_distance
+	var reach_distance := max_distance * ProtonScatter.get_distance_scale()
+	var max_d2 := reach_distance * reach_distance
 	var steps := float(density_steps)
 	var centre := _cell_of(pos)
-	var reach := int(ceil(max_distance / _cell_size))
+	var reach := int(ceil(reach_distance / _cell_size))
 	var still_active := {}
 
 	for cx in range(centre.x - reach, centre.x + reach + 1):
@@ -294,7 +295,7 @@ func _process(_delta: float) -> void:
 				var d2 := _positions[slot].distance_squared_to(pos)
 				if d2 > max_d2:
 					continue
-				var frac := _density_at(sqrt(d2) / max_distance)
+				var frac := _density_at(sqrt(d2) / reach_distance)
 				var step := int(ceil(frac * steps))
 				if step <= 0:
 					continue

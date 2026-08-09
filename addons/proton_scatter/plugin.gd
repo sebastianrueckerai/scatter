@@ -10,6 +10,10 @@ const ScatterCachePlugin := preload("./src/cache/inspector_plugin/scatter_cache_
 
 const GIZMO_SETTING := "addons/proton_scatter/always_show_gizmos"
 const MAX_PHYSICS_QUERIES_SETTING := "addons/proton_scatter/max_physics_queries_per_frame"
+## One dial for how far foliage is drawn. Scales every visibility range a scatter
+## node produces and every ScatterDensityLOD radius, so a graphics setting can
+## move the whole scene without editing scenes.
+const DISTANCE_SCALE_SETTING := "addons/proton_scatter/distance_scale"
 
 var _modifier_stack_plugin := ModifierStackPlugin.new()
 var _scatter_gizmo_plugin := ScatterGizmoPlugin.new()
@@ -26,6 +30,7 @@ func _get_plugin_name():
 func _enter_tree():
 	_ensure_setting_exists(GIZMO_SETTING, true)
 	_ensure_setting_exists(MAX_PHYSICS_QUERIES_SETTING, 500)
+	_ensure_setting_exists(DISTANCE_SCALE_SETTING, 1.0)
 
 	add_inspector_plugin(_modifier_stack_plugin)
 	add_inspector_plugin(_scatter_cache_plugin)

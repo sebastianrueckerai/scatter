@@ -51,11 +51,16 @@ static func enforce_output_root_owner(s: ProtonScatter) -> void:
 static func get_or_create_item_root(item: ProtonScatterItem) -> Node3D:
 	var s: ProtonScatter = item.get_parent()
 	ensure_output_root_exists(s)
-	var item_root: Node3D = s.output_root.get_node_or_null(NodePath(item.name))
+	# add_child() sanitises the name it is given, so an item called "@Node3D@11"
+	# -- what Godot auto-names an unnamed node -- becomes "_Node3D_11" in the
+	# tree. Looking it up by the raw name then never matches, and a fresh item
+	# root is created on every call, i.e. one per chunk.
+	var safe_name := String(item.name).validate_node_name()
+	var item_root: Node3D = s.output_root.get_node_or_null(NodePath(safe_name))
 
 	if not item_root:
 		item_root = Node3D.new()
-		item_root.name = item.name
+		item_root.name = safe_name
 		s.output_root.add_child(item_root, true)
 
 		if Engine.is_editor_hint():
@@ -98,10 +103,11 @@ static func get_or_create_multimesh(item: ProtonScatterItem, count: int) -> Mult
 	mmi.multimesh.mesh = mesh_instance.mesh
 	mmi.multimesh.transform_format = MultiMesh.TRANSFORM_3D
 
-	mmi.visibility_range_begin 			= item.visibility_range_begin
-	mmi.visibility_range_begin_margin 	= item.visibility_range_begin_margin
-	mmi.visibility_range_end 			= item.visibility_range_end
-	mmi.visibility_range_end_margin 	= item.visibility_range_end_margin
+	var _dscale := ProtonScatter.get_distance_scale()
+	mmi.visibility_range_begin 			= item.visibility_range_begin * _dscale
+	mmi.visibility_range_begin_margin 	= item.visibility_range_begin_margin * _dscale
+	mmi.visibility_range_end 			= item.visibility_range_end * _dscale
+	mmi.visibility_range_end_margin 	= item.visibility_range_end_margin * _dscale
 	mmi.visibility_range_fade_mode 		= item.visibility_range_fade_mode as GeometryInstance3D.VisibilityRangeFadeMode
 	mmi.layers = item.visibility_layers
 
@@ -152,10 +158,11 @@ static func get_or_create_multimesh_chunk(item: ProtonScatterItem,
 	mmi.multimesh.mesh = mesh_instance.mesh
 	mmi.multimesh.transform_format = MultiMesh.TRANSFORM_3D
 
-	mmi.visibility_range_begin 			= item.visibility_range_begin
-	mmi.visibility_range_begin_margin 	= item.visibility_range_begin_margin
-	mmi.visibility_range_end 			= item.visibility_range_end
-	mmi.visibility_range_end_margin 	= item.visibility_range_end_margin
+	var _dscale := ProtonScatter.get_distance_scale()
+	mmi.visibility_range_begin 			= item.visibility_range_begin * _dscale
+	mmi.visibility_range_begin_margin 	= item.visibility_range_begin_margin * _dscale
+	mmi.visibility_range_end 			= item.visibility_range_end * _dscale
+	mmi.visibility_range_end_margin 	= item.visibility_range_end_margin * _dscale
 	mmi.visibility_range_fade_mode 		= item.visibility_range_fade_mode as GeometryInstance3D.VisibilityRangeFadeMode
 	mmi.layers = item.visibility_layers
 
