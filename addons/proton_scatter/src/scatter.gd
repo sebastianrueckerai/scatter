@@ -210,7 +210,9 @@ func _get_property_list() -> Array[Dictionary]:
 
 	var chunk_usage := PROPERTY_USAGE_NO_EDITOR
 	var dimensions_usage := PROPERTY_USAGE_NO_EDITOR
-	if render_mode == 0 or render_mode == 2:
+	# Only render mode 0 acts on these (see _on_transforms_ready), so showing
+	# them for the particles mode advertises a control that does nothing.
+	if render_mode == 0:
 		chunk_usage = PROPERTY_USAGE_DEFAULT
 		if use_chunks:
 			dimensions_usage = PROPERTY_USAGE_DEFAULT
