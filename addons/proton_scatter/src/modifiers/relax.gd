@@ -75,15 +75,17 @@ func _process_transforms(transforms, _domain, _seed) -> void:
 
 	if use_computeshader:
 		rd = RenderingServer.create_local_rendering_device()
-		if rd != null:
+		if rd == null:
+			# No device: headless, or the OpenGL backend. Untick the box, which
+			# is how the user finds out the GPU path was unavailable.
+			use_computeshader = false
+		else:
 			var shader_spirv: RDShaderSPIRV = get_shader_file().get_spirv()
 			shader = rd.shader_create_from_spirv(shader_spirv)
 			pipeline = rd.compute_pipeline_create(shader)
 
-	# rd stays null when the device could not be created -- headless, or the
-	# OpenGL backend -- and the CPU path below runs instead. Unlike before, this
-	# no longer writes use_computeshader back to false: that is the user's
-	# setting, and a headless run should not silently rewrite the resource.
+	# rd stays null when the device could not be created, and the CPU path below
+	# runs instead.
 	if rd != null:
 		for iteration in iterations:
 			if interrupt_update:
